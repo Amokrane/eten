@@ -1,2 +1,4 @@
+include ':features:detail'
+include ':features:maps'
 include ':app'
 rootProject.name = "Eten"
