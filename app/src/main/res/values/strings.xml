@@ -1,3 +1,5 @@
 <resources>
-  <string name="app_name">Eten</string>
+    <string name="app_name">Eten</string>
+    <string name="title_maps">Restaurants Map</string>
+    <string name="title_detail">Restaurant Detail</string>
 </resources>
