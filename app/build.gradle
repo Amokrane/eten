@@ -27,6 +27,8 @@ android {
 dependencies {
     implementation project(':features:maps')
     implementation project(':features:detail')
+    implementation project(':data')
+    implementation project(':domain')
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation globalDependencies.kotlinStdLib
@@ -34,6 +36,12 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+
+    implementation globalDependencies.koin
+    implementation globalDependencies.koinViewModel
+
+    implementation globalDependencies.retrofit
+    implementation globalDependencies.retrofitConverterGson
 
     // debugging
     implementation 'com.facebook.stetho:stetho:1.5.1'

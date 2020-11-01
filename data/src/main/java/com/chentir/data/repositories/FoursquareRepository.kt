@@ -10,9 +10,7 @@ import kotlinx.coroutines.flow.flow
 import java.lang.Exception
 
 class FoursquareRepository(private val searchVenuesService: SearchVenuesService) : SearchRestaurantsRepository {
-
-    // Auth?
-    override suspend fun searchRestaurants(lat: String, lng: String): Flow<List<Restaurant>> {
+    override suspend fun searchRestaurants(lat: String, lng: String): Flow<List<Restaurant>> =
         flow {
             try {
                 val venuesResult =
@@ -26,5 +24,4 @@ class FoursquareRepository(private val searchVenuesService: SearchVenuesService)
                 emit(listOf())
             }
         }
-    }
 }

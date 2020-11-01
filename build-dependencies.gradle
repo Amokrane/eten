@@ -1,13 +1,25 @@
 ext {
-    KOTLIN_VERSION                  = '1.3.72'
-    KOTLIN_COROUTINES_CORE = '1.4.0'
-    KOTLIN_COROUTINES_ANDROID = '1.4.0'
+    kotlin_version = '1.3.72'
+    kotlin_coroutines_version = '1.4.0'
+    koin_version = '2.1.0'
+    retrofit_version = '2.9.0'
+    lifecycle_livedata_version = '2.2.0'
 
     globalDependencies = [
-            // KOTLIN
-            kotlinStdLib                        : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION",
-            kotlinCoroutinesCore                : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$KOTLIN_COROUTINES_CORE",
-            kotlinCoroutinesAndroid             : "org.jetbrains.kotlinx:kotlinx-coroutines-android:$KOTLIN_COROUTINES_ANDROID",
+            kotlinStdLib                        : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version",
+            kotlinCoroutinesCore                : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version",
+            kotlinCoroutinesAndroid             : "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_version",
             kotlinCoreKTX                       : "androidx.core:core-ktx:1.2.0",
+
+            // DI
+            koin                                : "org.koin:koin-android:$koin_version",
+            koinScope                           : "org.koin:koin-androidx-scope:$koin_version",
+            koinViewModel                       : "org.koin:koin-androidx-viewmodel:$koin_version",
+
+            // Networking
+            retrofit : "com.squareup.retrofit2:retrofit:$retrofit_version",
+            retrofitConverterGson : "com.squareup.retrofit2:converter-gson:$retrofit_version",
+
+            liveDataKtx : "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_livedata_version"
     ]
 }
