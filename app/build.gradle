@@ -22,6 +22,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -46,7 +55,7 @@ dependencies {
     // debugging
     implementation 'com.facebook.stetho:stetho:1.5.1'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation globalDependencies.timber
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 

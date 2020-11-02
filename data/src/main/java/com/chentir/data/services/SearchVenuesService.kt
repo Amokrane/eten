@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface SearchVenuesService {
-    @GET("venues/search")
+    @GET("search")
     suspend fun searchVenues(
         @Query("ll") ll: String
     ): VenuesResult

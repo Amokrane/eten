@@ -7,13 +7,17 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-val NetworkModule = module {
+val networkModule = module {
     single {
         val authInterceptor = Interceptor {
             val originalRequest = it.request()
             val originalHttpUrl = originalRequest.url()
-            val newHttpUrl = originalHttpUrl.newBuilder().addQueryParameter("client_id", "foo")
-                .addQueryParameter("client_secret", "bar").build()
+            val newHttpUrl = originalHttpUrl
+                .newBuilder()
+                .addQueryParameter("client_id", "C4NTPNVLJUMOA1ZXBSW2YE2HHMZXQMRVGB1GF5SGAXSGE2Y5")
+                .addQueryParameter("client_secret", "H2FJEGLRCPEF11I4NI0BXDQBVCRMH1DFKQ5BEIJJMNUZF0IE")
+                .addQueryParameter("v", "20201101")
+                .build()
             val requestBuilder = originalRequest.newBuilder().url(newHttpUrl)
 
             val newRequest = requestBuilder.build()
@@ -24,8 +28,11 @@ val NetworkModule = module {
     }
 
     single {
-        Retrofit.Builder().baseUrl("https://api.foursquare.com/v2/venues/").client(get())
-            .addConverterFactory(GsonConverterFactory.create()).build()
+        Retrofit.Builder()
+            .client(get())
+            .baseUrl("https://api.foursquare.com/v2/venues/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
     }
 
     single<SearchVenuesService> {

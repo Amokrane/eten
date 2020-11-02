@@ -5,8 +5,10 @@ import com.chentir.data.services.SearchVenuesService
 import com.chentir.data.utils.ResponseHandler
 import com.chentir.domain.SearchRestaurantsRepository
 import com.chentir.domain.entities.Restaurant
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.lang.Exception
 
 class FoursquareRepository(private val searchVenuesService: SearchVenuesService) : SearchRestaurantsRepository {
