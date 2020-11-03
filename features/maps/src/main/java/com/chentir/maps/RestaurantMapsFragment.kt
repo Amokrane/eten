@@ -27,8 +27,8 @@ class RestaurantMapsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel.getNearestRestaurants("48.904474", "2.072183").observe(viewLifecycleOwner,
-            Observer<List<Restaurant>> {
+        val liveData = viewModel.getNearestRestaurants("48.904474", "2.072183")
+        liveData.observe(viewLifecycleOwner, Observer<List<Restaurant>> {
                 Timber.d("Nearest Restaurants: $it")
             })
     }

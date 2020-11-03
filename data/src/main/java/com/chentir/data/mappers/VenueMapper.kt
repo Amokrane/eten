@@ -1,8 +1,8 @@
 package com.chentir.data.mappers
 
 import com.chentir.data.dto.Venue
+import com.chentir.domain.entities.LatLng
 import com.chentir.domain.entities.Restaurant
 
-// TODO
 fun Venue.toRestaurant(): Restaurant =
-    Restaurant()
+    Restaurant(this.name, this.location.address, LatLng(this.location.lat, this.location.lng))
