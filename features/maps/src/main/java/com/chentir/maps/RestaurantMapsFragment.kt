@@ -1,6 +1,7 @@
 package com.chentir.maps
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
@@ -12,6 +13,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.chentir.domain.entities.Restaurant
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -24,11 +27,13 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback {
     private val locationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                initMap()
+                showNearestRestaurants()
             } else {
                 Timber.d("Permission not granted")
             }
         }
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     companion object {
         fun newInstance() = RestaurantMapsFragment()
@@ -43,21 +48,19 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        requestLocationPermission()
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+        mapFragment?.getMapAsync(this)
     }
 
     override fun onMapReady(p0: GoogleMap?) {
-        showNearestRestaurants()
-    }
-
-    private fun requestLocationPermission() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         val locationPermissionStatus = ContextCompat.checkSelfPermission(
             requireContext(),
             Manifest.permission.ACCESS_FINE_LOCATION
         )
 
         when (locationPermissionStatus) {
-            PERMISSION_GRANTED -> initMap()
+            PERMISSION_GRANTED -> showNearestRestaurants()
             PERMISSION_DENIED -> {
                 if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
                     Timber.d("should show request permission rationale")
@@ -68,15 +71,15 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun initMap() {
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
-        mapFragment?.getMapAsync(this)
-    }
-
+    @SuppressLint("MissingPermission")
     private fun showNearestRestaurants() {
-        val liveData = viewModel.getNearestRestaurants("48.904474", "2.072183")
-        liveData.observe(viewLifecycleOwner, Observer<List<Restaurant>> {
-            Timber.d("Nearest Restaurants: $it")
-        })
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            Timber.d("Current location $location")
+            val liveData =
+                viewModel.getNearestRestaurants("${location.latitude}", "${location.longitude}")
+            liveData.observe(viewLifecycleOwner, Observer<List<Restaurant>> {
+                Timber.d("Nearest Restaurants: $it")
+            })
+        }
     }
 }
