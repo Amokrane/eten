@@ -3,6 +3,7 @@ package com.chentir.eten.di
 import com.chentir.data.repositories.FoursquareRepository
 import com.chentir.data.services.SearchVenuesService
 import com.chentir.domain.NearestRestaurantsUseCase
+import com.chentir.domain.utils.GeoUtils
 import org.koin.dsl.module
 
 val nearestRestaurantsUseCasesModule = module {
@@ -12,7 +13,12 @@ val nearestRestaurantsUseCasesModule = module {
     }
 
     single {
+        GeoUtils()
+    }
+
+    single {
         val foursquareRepository: FoursquareRepository = get()
-        NearestRestaurantsUseCase(foursquareRepository)
+        val geoUtils: GeoUtils = get()
+        NearestRestaurantsUseCase(foursquareRepository, geoUtils)
     }
 }

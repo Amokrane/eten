@@ -13,7 +13,7 @@ import timber.log.Timber
 import java.lang.Exception
 
 class FoursquareRepository(private val searchVenuesService: SearchVenuesService) : SearchRestaurantsRepository {
-    override suspend fun searchRestaurants(lat: String, lng: String): Flow<List<Restaurant>> =
+    override suspend fun searchRestaurants(lat: Double, lng: Double): Flow<List<Restaurant>> =
         flow {
             try {
                 val venuesResult =

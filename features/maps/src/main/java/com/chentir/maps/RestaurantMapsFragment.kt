@@ -15,19 +15,25 @@ import androidx.lifecycle.Observer
 import com.chentir.domain.entities.Restaurant
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
 
 class RestaurantMapsFragment : Fragment(), OnMapReadyCallback {
     private val viewModel: RestaurantMapsViewModel by sharedViewModel()
 
+    private lateinit var map: GoogleMap
+
     private val locationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                showNearestRestaurants()
+                showNearestRestaurants(map)
             } else {
                 Timber.d("Permission not granted")
             }
@@ -37,6 +43,7 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         fun newInstance() = RestaurantMapsFragment()
+        const val DEFAULT_ZOOM_LEVEL = 13f
     }
 
     override fun onCreateView(
@@ -52,7 +59,13 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback {
         mapFragment?.getMapAsync(this)
     }
 
-    override fun onMapReady(p0: GoogleMap?) {
+    override fun onMapReady(map: GoogleMap?) {
+        checkNotNull(map) {
+            Timber.e("GoogleMap is not properly initialized.")
+        }
+
+        this.map = map
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         val locationPermissionStatus = ContextCompat.checkSelfPermission(
             requireContext(),
@@ -60,7 +73,7 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback {
         )
 
         when (locationPermissionStatus) {
-            PERMISSION_GRANTED -> showNearestRestaurants()
+            PERMISSION_GRANTED -> showNearestRestaurants(map)
             PERMISSION_DENIED -> {
                 if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
                     Timber.d("should show request permission rationale")
@@ -72,14 +85,35 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback {
     }
 
     @SuppressLint("MissingPermission")
-    private fun showNearestRestaurants() {
+    private fun showNearestRestaurants(map: GoogleMap) {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            Timber.d("Current location $location")
-            val liveData =
-                viewModel.getNearestRestaurants("${location.latitude}", "${location.longitude}")
-            liveData.observe(viewLifecycleOwner, Observer<List<Restaurant>> {
-                Timber.d("Nearest Restaurants: $it")
-            })
+            val currentLat = 48.859985
+            val currentLng = 2.360735
+
+
+            viewModel.getNearestRestaurants(currentLat, currentLng)
+                .observe(viewLifecycleOwner, Observer<List<Restaurant>> { restaurants ->
+                    val boundsBuilder = LatLngBounds.Builder()
+                    restaurants.forEach { restaurant ->
+                        boundsBuilder.include(LatLng(restaurant.latlng.lat, restaurant.latlng.lng))
+
+                        map.addMarker(
+                            MarkerOptions().position(
+                                LatLng(
+                                    restaurant.latlng.lat,
+                                    restaurant.latlng.lng
+                                )
+                            ).title(restaurant.name)
+                        )
+                    }
+                    val bounds = boundsBuilder.build()
+                    map.animateCamera(
+                        CameraUpdateFactory.newLatLngZoom(
+                            bounds.center,
+                            DEFAULT_ZOOM_LEVEL
+                        )
+                    )
+                })
         }
     }
 }

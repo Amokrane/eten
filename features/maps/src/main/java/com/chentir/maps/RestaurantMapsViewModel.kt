@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class RestaurantMapsViewModel(private val nearestRestaurantsUseCase: NearestRestaurantsUseCase) : ViewModel() {
-    fun getNearestRestaurants(lat: String, lng: String): LiveData<List<Restaurant>> {
+    fun getNearestRestaurants(lat: Double, lng: Double): LiveData<List<Restaurant>> {
         var liveData = MutableLiveData<List<Restaurant>>()
         viewModelScope.launch(Dispatchers.IO) {
            nearestRestaurantsUseCase.getNearestRestaurants(lat, lng).collect {
