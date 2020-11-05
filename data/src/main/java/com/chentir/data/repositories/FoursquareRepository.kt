@@ -15,7 +15,6 @@ import java.lang.Exception
 class FoursquareRepository(private val searchVenuesService: SearchVenuesService) : SearchRestaurantsRepository {
     override suspend fun searchRestaurants(lat: String, lng: String): Flow<List<Restaurant>> =
         flow {
-            Timber.d("executing flow!!!!!!!!")
             try {
                 val venuesResult =
                     searchVenuesService.searchVenues("$lat,$lng")

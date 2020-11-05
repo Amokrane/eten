@@ -46,6 +46,11 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
 
     implementation globalDependencies.maps
+    implementation globalDependencies.location
+
+    implementation globalDependencies.activity
+    implementation globalDependencies.activityKtx
+    implementation globalDependencies.fragment
     
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

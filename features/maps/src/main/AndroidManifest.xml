@@ -13,6 +13,8 @@
         <dist:fusing dist:include="true" />
     </dist:module>
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
