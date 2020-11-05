@@ -1,3 +1,6 @@
+include ':domain'
+include ':core'
+include ':data'
 include ':features:detail'
 include ':features:maps'
 include ':app'
