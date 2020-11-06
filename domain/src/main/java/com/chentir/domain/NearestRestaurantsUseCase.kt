@@ -18,8 +18,8 @@ class NearestRestaurantsUseCase(
     suspend fun getNearestRestaurants(lat: Double, lng: Double): Flow<List<Restaurant>> {
         val p0 = LatLng(lat, lng)
         return searchRestaurantsRepository.searchRestaurants(lat, lng).map {
-            it.filter {
-                restaurant ->
+            Timber.d("Collecting $it")
+            it.filter { restaurant ->
                 val distance = geoUtils.calculateDistanceInMeters(p0, restaurant.latlng)
                 distance <= DEFAULT_RADIUS_IN_METERS
             }

@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.coroutineScope
 import com.chentir.domain.entities.Restaurant
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -22,13 +23,19 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
 
 class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListener {
     private val viewModel: RestaurantMapsViewModel by sharedViewModel()
-
     private lateinit var map: GoogleMap
+    private var initialAnimationFinished = false
+
+    private val coroutineScope = lifecycle.coroutineScope
+    private var fetcherJob: Job? = null
 
     private val locationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -44,6 +51,7 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
     companion object {
         fun newInstance() = RestaurantMapsFragment()
         const val DEFAULT_ZOOM_LEVEL = 13f
+        const val DEBOUNCE_DELAY_IN_MS = 100L
     }
 
     override fun onCreateView(
@@ -94,17 +102,37 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
                 CameraUpdateFactory.newLatLngZoom(
                     LatLng(currentLat, currentLng),
                     DEFAULT_ZOOM_LEVEL
-                )
+                ), object : GoogleMap.CancelableCallback {
+                    override fun onFinish() {
+                        initialAnimationFinished = true
+                    }
+
+                    override fun onCancel() {
+                        // nothing to be done
+                    }
+                }
             )
             updateNearestRestaurants(currentLat, currentLng)
         }
     }
 
+    /**
+     * To avoid being rate-limited, the following strategies are used:
+     * - Only fetch restaurants when the initial animation is finished.
+     * - Apply a debounce when panning the map, to only fetch restaurants when the camera position is final after a pan.
+     **/
     override fun onCameraMove() {
-        updateNearestRestaurants(
-            map.cameraPosition.target.latitude,
-            map.cameraPosition.target.longitude
-        )
+        if (initialAnimationFinished) {
+            Timber.d("Fetching restaurants around ${map.cameraPosition.target}")
+            fetcherJob?.cancel()
+            fetcherJob = coroutineScope.launch {
+                delay(DEBOUNCE_DELAY_IN_MS)
+                updateNearestRestaurants(
+                    map.cameraPosition.target.latitude,
+                    map.cameraPosition.target.longitude
+                )
+            }
+        }
     }
 
     private fun updateNearestRestaurants(lat: Double, lng: Double) {
