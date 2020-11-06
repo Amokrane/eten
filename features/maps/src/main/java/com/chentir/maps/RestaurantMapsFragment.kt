@@ -76,7 +76,10 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
         }
 
         this.map = map
-        map.setOnCameraMoveListener(this@RestaurantMapsFragment)
+        with(map) {
+            setOnCameraMoveListener(this@RestaurantMapsFragment)
+            setOnMarkerClickListener(this@RestaurantMapsFragment)
+        }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         val locationPermissionStatus = ContextCompat.checkSelfPermission(
@@ -127,7 +130,6 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
      **/
     override fun onCameraMove() {
         if (initialAnimationFinished) {
-            Timber.d("Fetching restaurants around ${map.cameraPosition.target}")
             fetcherJob?.cancel()
             fetcherJob = coroutineScope.launch {
                 delay(DEBOUNCE_DELAY_IN_MS)
