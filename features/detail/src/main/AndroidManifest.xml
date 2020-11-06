@@ -3,8 +3,7 @@
     package="com.chentir.detail">
 
     <dist:module
-        dist:instant="false"
-        dist:title="@string/title_detail">
+        dist:instant="false">
         <dist:delivery>
             <dist:on-demand />
         </dist:delivery>
