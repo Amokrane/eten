@@ -17,15 +17,15 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
 
-class RestaurantMapsFragment : Fragment(), OnMapReadyCallback {
+class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListener {
     private val viewModel: RestaurantMapsViewModel by sharedViewModel()
 
     private lateinit var map: GoogleMap
@@ -65,6 +65,7 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback {
         }
 
         this.map = map
+        map.setOnCameraMoveListener(this@RestaurantMapsFragment)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         val locationPermissionStatus = ContextCompat.checkSelfPermission(
@@ -89,31 +90,37 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             val currentLat = 48.859985
             val currentLng = 2.360735
-
-
-            viewModel.getNearestRestaurants(currentLat, currentLng)
-                .observe(viewLifecycleOwner, Observer<List<Restaurant>> { restaurants ->
-                    val boundsBuilder = LatLngBounds.Builder()
-                    restaurants.forEach { restaurant ->
-                        boundsBuilder.include(LatLng(restaurant.latlng.lat, restaurant.latlng.lng))
-
-                        map.addMarker(
-                            MarkerOptions().position(
-                                LatLng(
-                                    restaurant.latlng.lat,
-                                    restaurant.latlng.lng
-                                )
-                            ).title(restaurant.name)
-                        )
-                    }
-                    val bounds = boundsBuilder.build()
-                    map.animateCamera(
-                        CameraUpdateFactory.newLatLngZoom(
-                            bounds.center,
-                            DEFAULT_ZOOM_LEVEL
-                        )
-                    )
-                })
+            map.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(currentLat, currentLng),
+                    DEFAULT_ZOOM_LEVEL
+                )
+            )
+            updateNearestRestaurants(currentLat, currentLng)
         }
+    }
+
+    override fun onCameraMove() {
+        updateNearestRestaurants(
+            map.cameraPosition.target.latitude,
+            map.cameraPosition.target.longitude
+        )
+    }
+
+    private fun updateNearestRestaurants(lat: Double, lng: Double) {
+        viewModel.getNearestRestaurants(lat, lng)
+            .observe(viewLifecycleOwner, Observer<List<Restaurant>> { restaurants ->
+                restaurants.forEach { restaurant ->
+
+                    map.addMarker(
+                        MarkerOptions().position(
+                            LatLng(
+                                restaurant.latlng.lat,
+                                restaurant.latlng.lng
+                            )
+                        ).title(restaurant.name)
+                    )
+                }
+            })
     }
 }

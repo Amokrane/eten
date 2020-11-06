@@ -21,7 +21,6 @@ class NearestRestaurantsUseCase(
             it.filter {
                 restaurant ->
                 val distance = geoUtils.calculateDistanceInMeters(p0, restaurant.latlng)
-                Timber.d("Distance between $p0 and $restaurant is $distance")
                 distance <= DEFAULT_RADIUS_IN_METERS
             }
         }
