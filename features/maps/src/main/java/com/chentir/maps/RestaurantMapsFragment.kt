@@ -22,6 +22,7 @@ import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -29,13 +30,15 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
 
-class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListener {
+class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListener, GoogleMap.OnMarkerClickListener {
     private val viewModel: RestaurantMapsViewModel by sharedViewModel()
     private lateinit var map: GoogleMap
     private var initialAnimationFinished = false
 
     private val coroutineScope = lifecycle.coroutineScope
     private var fetcherJob: Job? = null
+
+    val markerMap = mutableMapOf<Marker, Restaurant>()
 
     private val locationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -96,6 +99,7 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
     @SuppressLint("MissingPermission")
     private fun showNearestRestaurants(map: GoogleMap) {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            // TODO: replace with location
             val currentLat = 48.859985
             val currentLng = 2.360735
             map.animateCamera(
@@ -139,16 +143,20 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
         viewModel.getNearestRestaurants(lat, lng)
             .observe(viewLifecycleOwner, Observer<List<Restaurant>> { restaurants ->
                 restaurants.forEach { restaurant ->
-
-                    map.addMarker(
-                        MarkerOptions().position(
-                            LatLng(
-                                restaurant.latlng.lat,
-                                restaurant.latlng.lng
-                            )
-                        ).title(restaurant.name)
-                    )
+                    val marker = map.addMarker(MarkerOptions().position(
+                        LatLng(
+                            restaurant.latlng.lat,
+                            restaurant.latlng.lng
+                        )
+                    ).title(restaurant.name))
+                    markerMap[marker] = restaurant
                 }
             })
+    }
+
+    override fun onMarkerClick(marker: Marker?): Boolean {
+        val restaurant = markerMap[marker]
+        Timber.d("$marker marker clicked, corresponding to $restaurant")
+        return true // consume the event
     }
 }
