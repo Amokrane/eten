@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,6 +14,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.coroutineScope
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.chentir.domain.entities.Restaurant
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -24,11 +27,13 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.android.synthetic.main.restaurant_maps_fragment.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
+import kotlin.concurrent.fixedRateTimer
 
 class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListener, GoogleMap.OnMarkerClickListener {
     private val viewModel: RestaurantMapsViewModel by sharedViewModel()
@@ -159,6 +164,8 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
     override fun onMarkerClick(marker: Marker?): Boolean {
         val restaurant = markerMap[marker]
         Timber.d("$marker marker clicked, corresponding to $restaurant")
+        val restaurantDetailUri = Uri.parse("eten://restaurant_detail")
+        findNavController().navigate(restaurantDetailUri)
         return true // consume the event
     }
 }

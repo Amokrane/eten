@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/details_nav_graph"
+    app:startDestination="@id/restaurantDetailFragment">
+    <fragment
+        android:id="@+id/restaurantDetailFragment"
+        android:name="com.chentir.detail.RestaurantDetailFragment"
+        app:moduleName="detail"
+        android:label="restaurant_detail_fragment"
+        tools:layout="@layout/restaurant_detail_fragment" >
+        <deepLink app:uri="eten://restaurant_detail" />
+    </fragment>
+</navigation>

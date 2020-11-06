@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
     compileSdkVersion 30
@@ -51,7 +52,11 @@ dependencies {
     implementation globalDependencies.activity
     implementation globalDependencies.activityKtx
     implementation globalDependencies.fragment
-    
+
+    implementation globalDependencies.navigationFragmentKtx
+    implementation globalDependencies.navigationUiKtx
+    implementation globalDependencies.navigationDynamicFeaturesFragment
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
