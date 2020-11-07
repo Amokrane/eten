@@ -1,6 +1,6 @@
 package com.chentir.eten.di
 
-import com.chentir.data.services.SearchVenuesService
+import com.chentir.data.api.FoursquareAPI
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
@@ -33,13 +33,13 @@ val networkModule = module {
     single {
         Retrofit.Builder()
             .client(get())
-            .baseUrl("https://api.foursquare.com/v2/venues/")
+            .baseUrl("https://api.foursquare.com/v2/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
-    single<SearchVenuesService> {
+    single<FoursquareAPI> {
         val retrofit: Retrofit = get()
-        retrofit.create(SearchVenuesService::class.java)
+        retrofit.create(FoursquareAPI::class.java)
     }
 }

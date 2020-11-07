@@ -4,6 +4,7 @@ import android.app.Application
 import com.chentir.detail.di.restaurantDetailModule
 import com.chentir.eten.di.nearestRestaurantsUseCasesModule
 import com.chentir.eten.di.networkModule
+import com.chentir.eten.di.restaurantDetailUseCasesModule
 import com.chentir.maps.di.restaurantMapsModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -24,7 +25,8 @@ class EtenApp : Application() {
                     networkModule,
                     restaurantMapsModule,
                     restaurantDetailModule,
-                    nearestRestaurantsUseCasesModule
+                    nearestRestaurantsUseCasesModule,
+                    restaurantDetailUseCasesModule
                 )
             )
         }

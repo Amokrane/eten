@@ -1,23 +1,24 @@
 package com.chentir.eten.di
 
-import com.chentir.data.repositories.FoursquareRepository
-import com.chentir.data.services.SearchVenuesService
-import com.chentir.data.sources.FoursquareSource
-import com.chentir.data.sources.LocalRestaurantsSource
-import com.chentir.domain.NearestRestaurantsUseCase
-import com.chentir.domain.RestaurantsSource
+import com.chentir.data.repositories.RestaurantDetailRepository
+import com.chentir.data.repositories.SearchRestaurantsRepository
+import com.chentir.data.api.FoursquareAPI
+import com.chentir.data.sources.RestaurantDetailRemoteSource
+import com.chentir.data.sources.SearchRestaurantsLocalSource
+import com.chentir.domain.*
 import com.chentir.domain.utils.GeoUtils
 import org.koin.dsl.module
 
 val nearestRestaurantsUseCasesModule = module {
-    single<RestaurantsSource> {
-        val searchVenuesService: SearchVenuesService = get()
-//        FoursquareSource(searchVenuesService)
-        LocalRestaurantsSource()
+    single<SearchRestaurantsSource> {
+        val foursquareAPI: FoursquareAPI = get()
+//        SearchSearchRestaurantsRemoteSource(foursquareAPI)
+        SearchRestaurantsLocalSource()
     }
+
     single {
-        val restaurantsSource: RestaurantsSource = get()
-        FoursquareRepository(restaurantsSource)
+        val searchRestaurantsSource: SearchRestaurantsSource = get()
+        SearchRestaurantsRepository(searchRestaurantsSource)
     }
 
     single {
@@ -25,8 +26,25 @@ val nearestRestaurantsUseCasesModule = module {
     }
 
     single {
-        val foursquareRepository: FoursquareRepository = get()
+        val searchRestaurantsRepository: SearchRestaurantsRepository = get()
         val geoUtils: GeoUtils = get()
-        NearestRestaurantsUseCase(foursquareRepository, geoUtils)
+        NearestRestaurantsUseCase(searchRestaurantsRepository, geoUtils)
+    }
+}
+
+val restaurantDetailUseCasesModule = module {
+    single<RestaurantDetailSource> {
+        val foursquareAPI: FoursquareAPI = get()
+        RestaurantDetailRemoteSource(foursquareAPI)
+    }
+
+    single {
+        val restaurantDetailSource: RestaurantDetailSource = get()
+        RestaurantDetailRepository(restaurantDetailSource)
+    }
+
+    single {
+        val restaurantDetailRepository: RestaurantDetailRepository = get()
+        RestaurantDetailUseCase(restaurantDetailRepository)
     }
 }

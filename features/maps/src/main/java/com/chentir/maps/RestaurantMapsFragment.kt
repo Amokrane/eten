@@ -12,15 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.coroutineScope
-import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.NavDeepLinkRequest
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigator
-import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.chentir.domain.entities.Restaurant
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -33,13 +27,11 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import kotlinx.android.synthetic.main.restaurant_maps_fragment.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
-import kotlin.concurrent.fixedRateTimer
 
 class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListener, GoogleMap.OnMarkerClickListener {
     private val viewModel: RestaurantMapsViewModel by sharedViewModel()

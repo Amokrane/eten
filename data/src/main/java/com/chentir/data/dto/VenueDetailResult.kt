@@ -2,7 +2,7 @@ package com.chentir.data.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class VenuesResult(
+data class VenueDetailResult(
     @SerializedName("meta") val meta: Meta,
-    @SerializedName("response") val response: VenuesResponse
+    @SerializedName("response") val response: VenueResponse
 )

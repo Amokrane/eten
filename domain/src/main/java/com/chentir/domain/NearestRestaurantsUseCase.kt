@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class NearestRestaurantsUseCase(
-    private val searchRestaurantsRepository: SearchRestaurantsRepository,
+    private val searchRestaurantsService: SearchRestaurantsService,
     private val geoUtils: GeoUtils
 ) {
     companion object {
@@ -16,7 +16,7 @@ class NearestRestaurantsUseCase(
 
     suspend fun getNearestRestaurants(lat: Double, lng: Double): Flow<List<Restaurant>> {
         val p0 = LatLng(lat, lng)
-        return searchRestaurantsRepository.searchRestaurants(lat, lng).map {
+        return searchRestaurantsService.searchRestaurants(lat, lng).map {
             it.filter { restaurant ->
                 val distance = geoUtils.calculateDistanceInMeters(p0, restaurant.latlng)
                 distance <= DEFAULT_RADIUS_IN_METERS

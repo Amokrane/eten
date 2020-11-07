@@ -2,11 +2,11 @@ package com.chentir.data.sources
 
 import com.chentir.data.dto.VenuesResult
 import com.chentir.data.mappers.toRestaurant
-import com.chentir.domain.RestaurantsSource
+import com.chentir.domain.SearchRestaurantsSource
 import com.chentir.domain.entities.Restaurant
 import com.google.gson.Gson
 
-class LocalRestaurantsSource : RestaurantsSource {
+class SearchRestaurantsLocalSource : SearchRestaurantsSource {
     override suspend fun searchRestaurants(lat: Double, lng: Double): List<Restaurant> {
         val venuesResult = Gson().fromJson(
             """
