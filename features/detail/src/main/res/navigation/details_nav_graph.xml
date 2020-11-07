@@ -7,9 +7,13 @@
     <fragment
         android:id="@+id/restaurantDetailFragment"
         android:name="com.chentir.detail.RestaurantDetailFragment"
-        app:moduleName="detail"
         android:label="restaurant_detail_fragment"
-        tools:layout="@layout/restaurant_detail_fragment" >
-        <deepLink app:uri="eten://restaurant_detail" />
+        app:moduleName="detail"
+        tools:layout="@layout/restaurant_detail_fragment">
+        <argument
+            android:name="restaurant_id"
+            android:defaultValue=""
+            app:argType="string" />
+        <deepLink app:uri="eten://restaurant_detail?restaurant_id={restaurant_id}" />
     </fragment>
 </navigation>

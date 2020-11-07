@@ -12,8 +12,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.coroutineScope
+import androidx.navigation.NavDeepLinkBuilder
+import androidx.navigation.NavDeepLinkRequest
+import androidx.navigation.NavOptions
+import androidx.navigation.Navigator
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.chentir.domain.entities.Restaurant
@@ -163,9 +169,13 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
 
     override fun onMarkerClick(marker: Marker?): Boolean {
         val restaurant = markerMap[marker]
-        Timber.d("$marker marker clicked, corresponding to $restaurant")
-        val restaurantDetailUri = Uri.parse("eten://restaurant_detail")
-        findNavController().navigate(restaurantDetailUri)
+        restaurant?.let {
+            Timber.d("$marker marker clicked, corresponding to $restaurant")
+            val restaurantDetailUri = Uri.parse("eten://restaurant_detail?restaurant_id=${it.id}")
+            val deepLinkRequest = NavDeepLinkRequest.Builder.fromUri(restaurantDetailUri).build()
+            findNavController().navigate(deepLinkRequest)
+        }
+
         return true // consume the event
     }
 }
