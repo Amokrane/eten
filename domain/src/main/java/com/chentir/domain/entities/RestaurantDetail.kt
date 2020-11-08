@@ -9,9 +9,7 @@ data class RestaurantDetail(
     val address: String?,
     val formattedAddress: Array<String>?,
     val latLng: LatLng,
-    val priceCategory: Int,
-    val rating: Double,
-    val phoneNumber: String
+    val phoneNumber: String?
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -27,8 +25,6 @@ data class RestaurantDetail(
             if (!formattedAddress!!.contentEquals(other.formattedAddress!!)) return false
         } else if (other.formattedAddress != null) return false
         if (latLng != other.latLng) return false
-        if (priceCategory != other.priceCategory) return false
-        if (rating != other.rating) return false
         if (phoneNumber != other.phoneNumber) return false
 
         return true
@@ -40,8 +36,6 @@ data class RestaurantDetail(
         result = 31 * result + (address?.hashCode() ?: 0)
         result = 31 * result + (formattedAddress?.contentHashCode() ?: 0)
         result = 31 * result + latLng.hashCode()
-        result = 31 * result + priceCategory
-        result = 31 * result + rating.hashCode()
         result = 31 * result + phoneNumber.hashCode()
         return result
     }

@@ -60,9 +60,6 @@ class RestaurantDetailRemoteSourceTests {
         whenever(contact.formattedPhone).thenReturn("fake_formatted_phone")
         whenever(venue.contact).thenReturn(contact)
 
-        val price = mock<Price>()
-        whenever(venue.price).thenReturn(price)
-
         return venue
     }
 }

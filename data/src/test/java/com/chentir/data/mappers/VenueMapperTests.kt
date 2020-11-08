@@ -2,7 +2,6 @@ package com.chentir.data.mappers
 
 import com.chentir.data.dto.Contact
 import com.chentir.data.dto.Location
-import com.chentir.data.dto.Price
 import com.chentir.data.dto.Venue
 import com.chentir.domain.entities.LatLng
 import com.chentir.domain.entities.Restaurant
@@ -33,8 +32,6 @@ class VenueMapperTests {
             address = "fake_address",
             formattedAddress = arrayOf("fake, formatted, address"),
             latLng = LatLng(48.0, 2.0),
-            priceCategory = 1,
-            rating = 4.0,
             phoneNumber = "fake_formatted_phone_number"
         ))
     }
@@ -44,8 +41,6 @@ class VenueMapperTests {
         name = "fake_name",
         location = Location("fake_address", arrayOf("fake, formatted, address"), 48.0, 2.0),
         canonicalUrl = "canonical_url",
-        price = Price(1, "price_message"),
-        rating = 4.0,
         contact = Contact("fake_phone_number", "fake_formatted_phone_number")
     )
 }

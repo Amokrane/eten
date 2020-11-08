@@ -86,8 +86,10 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback {
                             restaurantDetail.formattedAddress?.joinToString("") { it -> "$it\n" }
 
                         val restaurantRatingTextView =
-                            view?.findViewById<TextView>(R.id.restaurant_price_range)
-                        restaurantRatingTextView?.text = "${restaurantDetail.priceCategory}"
+                            view?.findViewById<TextView>(R.id.restaurant_phone_number)
+                        restaurantDetail.phoneNumber?.let {
+                            restaurantRatingTextView?.text = "$it"
+                        }
                     }
 
                     is Lce.Error -> {
