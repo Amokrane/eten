@@ -1,5 +1,8 @@
 package com.chentir.domain.entities
 
+import com.chentir.core.OpenForTesting
+
+@OpenForTesting
 data class RestaurantDetail(
     val id: String,
     val name: String,
@@ -21,7 +24,7 @@ data class RestaurantDetail(
         if (address != other.address) return false
         if (formattedAddress != null) {
             if (other.formattedAddress == null) return false
-            if (!formattedAddress.contentEquals(other.formattedAddress)) return false
+            if (!formattedAddress!!.contentEquals(other.formattedAddress!!)) return false
         } else if (other.formattedAddress != null) return false
         if (latLng != other.latLng) return false
         if (priceCategory != other.priceCategory) return false
