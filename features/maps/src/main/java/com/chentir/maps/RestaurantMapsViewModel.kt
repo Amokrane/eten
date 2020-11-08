@@ -9,35 +9,31 @@ import com.google.android.gms.maps.model.LatLngBounds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.lang.Exception
 
 class RestaurantMapsViewModel(private val nearestRestaurantsUseCase: NearestRestaurantsUseCase) :
     ViewModel() {
+    var liveData = MutableLiveData<Lce<List<Restaurant>>>()
+
+
     fun getNearestRestaurants(
         currentLatitude: Double,
         currentLongitude: Double,
         viewportBounds: LatLngBounds
-    ): LiveData<Lce<List<Restaurant>>> {
-        Timber.d("Fetching restaurants within bounds $viewportBounds")
-        var liveData = MutableLiveData<Lce<List<Restaurant>>>()
+    ) = viewModelScope.launch(Dispatchers.IO) {
         liveData.postValue(Lce.Loading)
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                nearestRestaurantsUseCase.getNearestRestaurants(
-                    currentLatitude,
-                    currentLongitude
-                ).collect {
-                    val restaurantsWithinBounds = it.filter {
-                        viewportBounds.contains(LatLng(currentLatitude, currentLongitude))
-                    }
-                    liveData.postValue(Lce.Success(it))
+        try {
+            nearestRestaurantsUseCase.getNearestRestaurants(
+                currentLatitude,
+                currentLongitude
+            ).collect { restaurants ->
+                val restaurantsWithinBounds = restaurants.filter {
+                    restaurant ->  viewportBounds.contains(LatLng(restaurant.latlng.lat, restaurant.latlng.lng))
                 }
-            } catch (e: Exception) {
-                liveData.postValue(Lce.Error(e))
+                liveData.postValue(Lce.Success(restaurantsWithinBounds))
             }
-
+        } catch (e: Exception) {
+            liveData.postValue(Lce.Error(e))
         }
-        return liveData
     }
 }

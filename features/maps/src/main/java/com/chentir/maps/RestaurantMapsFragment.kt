@@ -160,42 +160,40 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
 
     private fun updateNearestRestaurants(lat: Double, lng: Double, visibleBounds: LatLngBounds) {
         viewModel.getNearestRestaurants(lat, lng, visibleBounds)
-            .observe(viewLifecycleOwner, Observer<Lce<List<Restaurant>>> { lce ->
-                when (lce) {
-                    is Lce.Loading -> {
-                        Timber.d("Loading...")
-                    }
-                    is Lce.Success<List<Restaurant>> -> {
-                        val restaurants = lce.data
-                        Timber.d("Nearest Restaurants ${restaurants.size}")
-                        restaurants.forEach { restaurant ->
-                            val marker = map.addMarker(
-                                MarkerOptions().position(
-                                    LatLng(
-                                        restaurant.latlng.lat,
-                                        restaurant.latlng.lng
-                                    )
-                                ).title(restaurant.name)
-                            )
-                            markerMap[marker] = restaurant
-                        }
-                    }
-                    is Lce.Error -> {
-                        Timber.e(lce.message)
+        viewModel.liveData.observe(viewLifecycleOwner, Observer<Lce<List<Restaurant>>> { lce ->
+            when (lce) {
+                is Lce.Loading -> {
+                    Timber.d("Loading...")
+                }
+                is Lce.Success<List<Restaurant>> -> {
+                    val restaurants = lce.data
+                    Timber.d("Nearest Restaurants ${restaurants.size}")
+                    restaurants.forEach { restaurant ->
+                        val marker = map.addMarker(
+                            MarkerOptions().position(
+                                LatLng(
+                                    restaurant.latlng.lat,
+                                    restaurant.latlng.lng
+                                )
+                            ).title(restaurant.name)
+                        )
+                        markerMap[marker] = restaurant
                     }
                 }
-            })
+                is Lce.Error -> {
+                    Timber.e(lce.message)
+                }
+            }
+        })
     }
 
     override fun onMarkerClick(marker: Marker?): Boolean {
         val restaurant = markerMap[marker]
         restaurant?.let {
-            Timber.d("$marker marker clicked, corresponding to $restaurant")
             val restaurantDetailUri = Uri.parse("eten://restaurant_detail?restaurant_id=${it.id}")
             val deepLinkRequest = NavDeepLinkRequest.Builder.fromUri(restaurantDetailUri).build()
             findNavController().navigate(deepLinkRequest)
         }
-
         return true // consume the event
     }
 }

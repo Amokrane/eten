@@ -1,17 +1,19 @@
 package com.chentir.domain
 
+import com.chentir.core.OpenForTesting
 import com.chentir.domain.entities.LatLng
 import com.chentir.domain.entities.Restaurant
 import com.chentir.domain.utils.GeoUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+@OpenForTesting
 class NearestRestaurantsUseCase(
     private val searchRestaurantsService: SearchRestaurantsService,
     private val geoUtils: GeoUtils
 ) {
     companion object {
-        const val DEFAULT_RADIUS_IN_METERS = 10_000
+        const val DEFAULT_RADIUS_IN_METERS = 5_000
     }
 
     suspend fun getNearestRestaurants(lat: Double, lng: Double): Flow<List<Restaurant>> {

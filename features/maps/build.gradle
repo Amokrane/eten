@@ -58,6 +58,10 @@ dependencies {
     implementation globalDependencies.navigationDynamicFeaturesFragment
 
     testImplementation 'junit:junit:4.12'
+    testImplementation globalDependencies.mockitoKotlin
+    testImplementation globalDependencies.coreTesting
+    testImplementation globalDependencies.kotlinxCoroutinesTest
+
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     androidTestImplementation 'androidx.annotation:annotation:1.1.0'
