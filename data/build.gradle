@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: "kotlin-allopen"
 
 android {
     compileSdkVersion 30
@@ -24,8 +25,13 @@ android {
     }
 }
 
+allOpen {
+    annotation("com.chentir.core.OpenForTesting")
+}
+
 dependencies {
     implementation project(':domain')
+    implementation project(':core')
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation globalDependencies.kotlinStdLib
@@ -41,7 +47,10 @@ dependencies {
 
     implementation globalDependencies.timber
 
+    testImplementation globalDependencies.mockitoKotlin
     testImplementation 'junit:junit:4.12'
+    testImplementation globalDependencies.atrium
+
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
