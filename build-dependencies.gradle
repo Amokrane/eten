@@ -48,6 +48,9 @@ ext {
             mockitoKotlin: "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0",
             turbine: "app.cash.turbine:turbine:0.2.1",
             coreTesting: 'android.arch.core:core-testing:2.1.0',
-            kotlinxCoroutinesTest: 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1'
+            kotlinxCoroutinesTest: 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1',
+            junit: 'junit:junit:4.12',
+            junitExt: 'androidx.test.ext:junit:1.1.2',
+            espressoCore: 'androidx.test.espresso:espresso-core:3.3.0'
     ]
 }
