@@ -16,14 +16,9 @@ class SearchRestaurantsRepository(
 ) : SearchRestaurantsService {
     override suspend fun searchRestaurants(lat: Double, lng: Double): Flow<List<Restaurant>> =
         flow {
-            try {
-                emit(restaurantsCache.get())
-                val restaurants = searchRestaurantsSource.searchRestaurants(lat, lng)
-                emit(restaurants)
-                restaurantsCache.set(restaurants)
-            } catch (e: Exception) {
-                Timber.e(e)
-                emit(listOf())
-            }
+            emit(restaurantsCache.get())
+            val restaurants = searchRestaurantsSource.searchRestaurants(lat, lng)
+            emit(restaurants)
+            restaurantsCache.set(restaurants)
         }
 }

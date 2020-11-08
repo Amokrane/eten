@@ -46,5 +46,6 @@ ext {
 
             // testing
             mockitoKotlin: "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0",
+            turbine: "app.cash.turbine:turbine:0.2.1"
     ]
 }
