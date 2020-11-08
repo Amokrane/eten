@@ -8,11 +8,13 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import java.lang.RuntimeException
 import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 class RestaurantDetailRepositoryTests {
     @Mock
     private lateinit var restaurantDetailSource: RestaurantDetailSource
@@ -20,15 +22,14 @@ class RestaurantDetailRepositoryTests {
     @Mock
     private lateinit var restaurantDetail: RestaurantDetail
 
+    @InjectMocks
     private lateinit var restaurantDetailRepository: RestaurantDetailRepository
 
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-        restaurantDetailRepository = RestaurantDetailRepository(restaurantDetailSource)
     }
 
-    @ExperimentalTime
     @Test
     fun fetchRestaurantDetail_NonEmptySource() {
         runBlocking {
@@ -46,7 +47,6 @@ class RestaurantDetailRepositoryTests {
         }
     }
 
-    @ExperimentalTime
     @Test
     fun fetchRestaurantDetail_Error() {
         runBlocking {
