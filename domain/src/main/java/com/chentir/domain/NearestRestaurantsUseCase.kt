@@ -17,10 +17,10 @@ class NearestRestaurantsUseCase(
     }
 
     suspend fun getNearestRestaurants(lat: Double, lng: Double): Flow<List<Restaurant>> {
-        val p0 = LatLng(lat, lng)
+        val position = LatLng(lat, lng)
         return searchRestaurantsService.searchRestaurants(lat, lng).map {
             it.filter { restaurant ->
-                val distance = geoUtils.calculateDistanceInMeters(p0, restaurant.latlng)
+                val distance = geoUtils.calculateDistanceInMeters(position, restaurant.latlng)
                 distance <= DEFAULT_RADIUS_IN_METERS
             }
         }

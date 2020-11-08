@@ -1,8 +1,10 @@
 package com.chentir.domain.utils
 
 import android.location.Location
+import com.chentir.core.OpenForTesting
 import com.chentir.domain.entities.LatLng
 
+@OpenForTesting
 class GeoUtils {
     fun calculateDistanceInMeters(p0: LatLng, p1: LatLng): Float {
         val results = FloatArray(1)
