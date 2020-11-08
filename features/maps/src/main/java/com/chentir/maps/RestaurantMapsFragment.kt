@@ -25,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.Job
@@ -33,7 +34,8 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
 
-class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListener, GoogleMap.OnMarkerClickListener {
+class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListener,
+    GoogleMap.OnMarkerClickListener {
     private val viewModel: RestaurantMapsViewModel by sharedViewModel()
     private lateinit var map: GoogleMap
     private var initialAnimationFinished = false
@@ -115,6 +117,11 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
                 ), object : GoogleMap.CancelableCallback {
                     override fun onFinish() {
                         initialAnimationFinished = true
+                        updateNearestRestaurants(
+                            currentLat,
+                            currentLng,
+                            map.projection.visibleRegion.latLngBounds
+                        )
                     }
 
                     override fun onCancel() {
@@ -122,7 +129,11 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
                     }
                 }
             )
-            updateNearestRestaurants(currentLat, currentLng)
+
+            updateNearestRestaurants(
+                currentLat,
+                currentLng,
+                map.projection.visibleRegion.latLngBounds)
         }
     }
 
@@ -138,22 +149,26 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
                 delay(DEBOUNCE_DELAY_IN_MS)
                 updateNearestRestaurants(
                     map.cameraPosition.target.latitude,
-                    map.cameraPosition.target.longitude
+                    map.cameraPosition.target.longitude,
+                    map.projection.visibleRegion.latLngBounds
                 )
             }
         }
     }
 
-    private fun updateNearestRestaurants(lat: Double, lng: Double) {
-        viewModel.getNearestRestaurants(lat, lng)
+    private fun updateNearestRestaurants(lat: Double, lng: Double, visibleBounds: LatLngBounds) {
+        viewModel.getNearestRestaurants(lat, lng, visibleBounds)
             .observe(viewLifecycleOwner, Observer<List<Restaurant>> { restaurants ->
+                Timber.d("Nearest Restaurants ${restaurants.size}")
                 restaurants.forEach { restaurant ->
-                    val marker = map.addMarker(MarkerOptions().position(
-                        LatLng(
-                            restaurant.latlng.lat,
-                            restaurant.latlng.lng
-                        )
-                    ).title(restaurant.name))
+                    val marker = map.addMarker(
+                        MarkerOptions().position(
+                            LatLng(
+                                restaurant.latlng.lat,
+                                restaurant.latlng.lng
+                            )
+                        ).title(restaurant.name)
+                    )
                     markerMap[marker] = restaurant
                 }
             })

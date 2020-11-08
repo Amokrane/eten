@@ -11,7 +11,7 @@ class NearestRestaurantsUseCase(
     private val geoUtils: GeoUtils
 ) {
     companion object {
-        const val DEFAULT_RADIUS_IN_METERS = 1_000
+        const val DEFAULT_RADIUS_IN_METERS = 10_000
     }
 
     suspend fun getNearestRestaurants(lat: Double, lng: Double): Flow<List<Restaurant>> {
