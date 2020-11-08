@@ -1,7 +1,9 @@
 package com.chentir.data.dto
 
+import com.chentir.core.OpenForTesting
 import com.google.gson.annotations.SerializedName
 
+@OpenForTesting
 data class Location(
     @SerializedName("address") val address: String?,
     @SerializedName("formattedAddress") val formattedAddress: Array<String>?,
@@ -17,7 +19,7 @@ data class Location(
         if (address != other.address) return false
         if (formattedAddress != null) {
             if (other.formattedAddress == null) return false
-            if (!formattedAddress.contentEquals(other.formattedAddress)) return false
+            if (!formattedAddress!!.contentEquals(other.formattedAddress!!)) return false
         } else if (other.formattedAddress != null) return false
         if (lat != other.lat) return false
         if (lng != other.lng) return false
