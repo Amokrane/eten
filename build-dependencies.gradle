@@ -4,7 +4,6 @@ ext {
     koin_version = '2.1.3'
     retrofit_version = '2.9.0'
     lifecycle_livedata_version = '2.2.0'
-    atrium_version = '0.14.0.RC1'
 
     globalDependencies = [
             kotlinStdLib                     : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version",
@@ -47,6 +46,5 @@ ext {
 
             // testing
             mockitoKotlin: "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0",
-            atrium: "ch.tutteli.atrium:atrium-fluent-en_GB:$atrium_version"
     ]
 }

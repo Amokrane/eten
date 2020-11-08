@@ -13,7 +13,6 @@ fun Venue.toRestaurant(): Restaurant =
         LatLng(this.location.lat, this.location.lng)
     )
 
-
 fun Venue.toRestaurantDetail(): RestaurantDetail =
     RestaurantDetail(
         this.id,

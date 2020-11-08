@@ -1,10 +1,11 @@
 package com.chentir.data.caching
 
 
-import ch.tutteli.atrium.verbs.assertThat
 import com.chentir.domain.entities.Restaurant
 import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -23,9 +24,9 @@ class RestaurantsMemoryCacheTest {
         runBlocking {
             restaurantsMemoryCache.set(listOf(firstRestaurant, secondRestaurant))
             val restaurants: List<Restaurant> = restaurantsMemoryCache.get()
-            assertThat(restaurants.size == 2)
-            assertThat(restaurants.contains(firstRestaurant))
-            assertThat(restaurants.contains(secondRestaurant))
+            assertEquals(2, restaurants.size)
+            assertTrue(restaurants.contains(firstRestaurant))
+            assertTrue(restaurants.contains(secondRestaurant))
         }
     }
 
@@ -35,8 +36,8 @@ class RestaurantsMemoryCacheTest {
         runBlocking {
             restaurantsMemoryCache.add(restaurant)
             val restaurants: List<Restaurant> = restaurantsMemoryCache.get()
-            assertThat(restaurants.size == 1)
-            assertThat(restaurants.contains(restaurant))
+            assertEquals(1, restaurants.size)
+            assertTrue(restaurants.contains(restaurant))
         }
     }
 
@@ -44,7 +45,7 @@ class RestaurantsMemoryCacheTest {
     fun `given no cached restaurants, when calling get, then no restaurants are returned`() {
         runBlocking {
             val restaurants: List<Restaurant> = restaurantsMemoryCache.get()
-            assertThat(restaurants.isEmpty())
+            assertTrue(restaurants.isEmpty())
         }
     }
 }
