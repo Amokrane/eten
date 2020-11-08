@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.coroutineScope
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
+import com.chentir.core.Lce
 import com.chentir.domain.entities.Restaurant
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -133,7 +134,8 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
             updateNearestRestaurants(
                 currentLat,
                 currentLng,
-                map.projection.visibleRegion.latLngBounds)
+                map.projection.visibleRegion.latLngBounds
+            )
         }
     }
 
@@ -158,18 +160,29 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
 
     private fun updateNearestRestaurants(lat: Double, lng: Double, visibleBounds: LatLngBounds) {
         viewModel.getNearestRestaurants(lat, lng, visibleBounds)
-            .observe(viewLifecycleOwner, Observer<List<Restaurant>> { restaurants ->
-                Timber.d("Nearest Restaurants ${restaurants.size}")
-                restaurants.forEach { restaurant ->
-                    val marker = map.addMarker(
-                        MarkerOptions().position(
-                            LatLng(
-                                restaurant.latlng.lat,
-                                restaurant.latlng.lng
+            .observe(viewLifecycleOwner, Observer<Lce<List<Restaurant>>> { lce ->
+                when (lce) {
+                    is Lce.Loading -> {
+                        Timber.d("Loading...")
+                    }
+                    is Lce.Success<List<Restaurant>> -> {
+                        val restaurants = lce.data
+                        Timber.d("Nearest Restaurants ${restaurants.size}")
+                        restaurants.forEach { restaurant ->
+                            val marker = map.addMarker(
+                                MarkerOptions().position(
+                                    LatLng(
+                                        restaurant.latlng.lat,
+                                        restaurant.latlng.lng
+                                    )
+                                ).title(restaurant.name)
                             )
-                        ).title(restaurant.name)
-                    )
-                    markerMap[marker] = restaurant
+                            markerMap[marker] = restaurant
+                        }
+                    }
+                    is Lce.Error -> {
+                        Timber.e(lce.message)
+                    }
                 }
             })
     }

@@ -1,6 +1,7 @@
 package com.chentir.maps
 
 import androidx.lifecycle.*
+import com.chentir.core.Lce
 import com.chentir.domain.NearestRestaurantsUseCase
 import com.chentir.domain.entities.Restaurant
 import com.google.android.gms.maps.model.LatLng
@@ -17,9 +18,10 @@ class RestaurantMapsViewModel(private val nearestRestaurantsUseCase: NearestRest
         currentLatitude: Double,
         currentLongitude: Double,
         viewportBounds: LatLngBounds
-    ): LiveData<List<Restaurant>> {
+    ): LiveData<Lce<List<Restaurant>>> {
         Timber.d("Fetching restaurants within bounds $viewportBounds")
-        var liveData = MutableLiveData<List<Restaurant>>()
+        var liveData = MutableLiveData<Lce<List<Restaurant>>>()
+        liveData.postValue(Lce.Loading)
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 nearestRestaurantsUseCase.getNearestRestaurants(
@@ -29,10 +31,10 @@ class RestaurantMapsViewModel(private val nearestRestaurantsUseCase: NearestRest
                     val restaurantsWithinBounds = it.filter {
                         viewportBounds.contains(LatLng(currentLatitude, currentLongitude))
                     }
-                    liveData.postValue(restaurantsWithinBounds)
+                    liveData.postValue(Lce.Success(it))
                 }
             } catch (e: Exception) {
-                // todo: handle error
+                liveData.postValue(Lce.Error(e))
             }
 
         }
