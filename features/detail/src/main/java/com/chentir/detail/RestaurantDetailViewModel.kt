@@ -1,6 +1,5 @@
 package com.chentir.detail
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,11 +11,13 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-class RestaurantDetailViewModel(private val restaurantDetailUseCase: RestaurantDetailUseCase) : ViewModel() {
-    fun fetchRestaurantDetail(restaurantId: String): LiveData<Lce<RestaurantDetail>> {
-        var liveData = MutableLiveData<Lce<RestaurantDetail>>()
-        liveData.postValue(Lce.Loading)
+class RestaurantDetailViewModel(private val restaurantDetailUseCase: RestaurantDetailUseCase) :
+    ViewModel() {
+    var liveData = MutableLiveData<Lce<RestaurantDetail>>()
+
+    fun fetchRestaurantDetail(restaurantId: String) =
         viewModelScope.launch(Dispatchers.IO) {
+            liveData.postValue(Lce.Loading)
             restaurantDetailUseCase.fetchRestaurantDetail(restaurantId).collect {
                 try {
                     liveData.postValue(Lce.Success(it))
@@ -26,6 +27,4 @@ class RestaurantDetailViewModel(private val restaurantDetailUseCase: RestaurantD
 
             }
         }
-        return liveData
-    }
 }
