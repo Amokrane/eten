@@ -44,6 +44,8 @@ class RestaurantDetailFragment : Fragment(), OnMapReadyCallback {
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.restaurant_detail_map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
+
+        activity?.setTitle(R.string.restaurant_detail_title)
     }
 
     override fun onMapReady(map: GoogleMap?) {

@@ -74,6 +74,7 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
         super.onActivityCreated(savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
+        activity?.setTitle(R.string.restaurant_maps_title)
     }
 
     override fun onMapReady(map: GoogleMap?) {
@@ -108,9 +109,8 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
     @SuppressLint("MissingPermission")
     private fun showNearestRestaurants(map: GoogleMap) {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            // TODO: replace with location
-            val currentLat = 48.859985
-            val currentLng = 2.360735
+            val currentLat = location.latitude
+            val currentLng = location.longitude
             map.animateCamera(
                 CameraUpdateFactory.newLatLngZoom(
                     LatLng(currentLat, currentLng),
