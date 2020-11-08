@@ -1,6 +1,8 @@
 package com.chentir.eten.di
 
+import android.content.Context
 import com.chentir.data.api.FoursquareAPI
+import com.chentir.eten.R
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
@@ -14,10 +16,12 @@ val networkModule = module {
         val interceptor = Interceptor {
             val originalRequest = it.request()
             val originalHttpUrl = originalRequest.url()
+            val context: Context = get()
+
             val newHttpUrl = originalHttpUrl
                 .newBuilder()
-                .addQueryParameter("client_id", "C4NTPNVLJUMOA1ZXBSW2YE2HHMZXQMRVGB1GF5SGAXSGE2Y5")
-                .addQueryParameter("client_secret", "H2FJEGLRCPEF11I4NI0BXDQBVCRMH1DFKQ5BEIJJMNUZF0IE")
+                .addQueryParameter("client_id", context.getString(R.string.foursquare_client_id))
+                .addQueryParameter("client_secret", context.getString(R.string.foursquare_client_secret))
                 .addQueryParameter("v", "20201101")
                 .addQueryParameter("categoryId", FOOD_CATEGORY)
                 .build()
