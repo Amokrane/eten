@@ -41,6 +41,8 @@ ext {
             navigationUiKtx                  : "androidx.navigation:navigation-ui-ktx:$nav_version",
 
             // Feature module Support
-            navigationDynamicFeaturesFragment: "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
+            navigationDynamicFeaturesFragment: "androidx.navigation:navigation-dynamic-features-fragment:$nav_version",
+
+            constraintLayout:  "androidx.constraintlayout:constraintlayout:2.0.4"
     ]
 }

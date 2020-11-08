@@ -5,14 +5,21 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.chentir.domain.entities.RestaurantDetail
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import timber.log.Timber
 
-class RestaurantDetailFragment : Fragment() {
+class RestaurantDetailFragment : Fragment(), OnMapReadyCallback {
     companion object {
+        const val DEFAULT_ZOOM_LEVEL = 13f
         fun newInstance() = RestaurantDetailFragment()
     }
 
@@ -32,10 +39,45 @@ class RestaurantDetailFragment : Fragment() {
             restaurantId = it["restaurant_id"] as String
         }
 
-        restaurantId?.let {
-            viewModel.fetchRestaurantDetail(it)
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.restaurant_detail_map) as? SupportMapFragment
+        mapFragment?.getMapAsync(this)
+    }
+
+    override fun onMapReady(map: GoogleMap?) {
+        map?.let {
+            viewModel.fetchRestaurantDetail(restaurantId)
                 .observe(viewLifecycleOwner, Observer<RestaurantDetail> { restaurantDetail ->
-                    Timber.d("restaurantDetail $restaurantDetail")
+                    val restaurantLatitude = restaurantDetail.latLng.lat
+                    val restaurantLongitude = restaurantDetail.latLng.lng
+
+                    map.addMarker(
+                        MarkerOptions().position(
+                            LatLng(
+                                restaurantLatitude,
+                                restaurantLongitude
+                            )
+                        ).title(restaurantDetail.name)
+                    )
+
+                    map.animateCamera(
+                        CameraUpdateFactory.newLatLngZoom(
+                            LatLng(restaurantLatitude, restaurantLongitude),
+                            DEFAULT_ZOOM_LEVEL
+                        )
+                    )
+
+                    val restaurantNameTextView = view?.findViewById<TextView>(R.id.restaurant_name)
+                    restaurantNameTextView?.text = restaurantDetail.name
+
+                    val restaurantAddressTextView =
+                        view?.findViewById<TextView>(R.id.restaurant_address)
+                    restaurantAddressTextView?.text =
+                        restaurantDetail.formattedAddress?.joinToString("") { it -> "$it\n" }
+
+                    val restaurantRatingTextView =
+                        view?.findViewById<TextView>(R.id.restaurant_price_range)
+                    restaurantRatingTextView?.text = "${restaurantDetail.priceCategory}"
                 })
         }
     }

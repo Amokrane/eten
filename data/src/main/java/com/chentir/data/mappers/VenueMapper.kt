@@ -19,6 +19,7 @@ fun Venue.toRestaurantDetail(): RestaurantDetail =
         this.id,
         this.name,
         this.location.address,
+        this.location.formattedAddress,
         LatLng(this.location.lat, this.location.lng),
         this.price!!.tier,
         this.rating!!,
