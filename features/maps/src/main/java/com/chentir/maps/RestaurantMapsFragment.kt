@@ -138,40 +138,35 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
     }
 
     private fun updateNearestRestaurants(lat: Double, lng: Double, visibleBounds: LatLngBounds) {
-
         viewModel.getNearestRestaurants(lat, lng, visibleBounds)
         viewModel.liveData.observe(viewLifecycleOwner, Observer<Lce<List<Restaurant>>> { lce ->
             when (lce) {
                 is Lce.Loading -> {
-                    Timber.d("Loading...")
+                    Toast.makeText(activity, "Fetching restaurants...", Toast.LENGTH_SHORT).show()
                 }
                 is Lce.Success<List<Restaurant>> -> {
                     val restaurants = lce.data
                     val boundsBuilder = LatLngBounds.builder()
-                    Timber.d("Nearest Restaurants ${restaurants.size}")
-                    when (restaurants.isEmpty()) {
-                        true -> Timber.d("No restaurants near you!")
-                        false -> {
-                            restaurants.forEach { restaurant ->
-                                val marker = map.addMarker(
-                                    MarkerOptions().position(
-                                        LatLng(
-                                            restaurant.latlng.lat,
-                                            restaurant.latlng.lng
-                                        )
-                                    ).title(restaurant.name)
-                                )
-                                markerMap[marker] = restaurant
-                            }
-
-                            if (!initialAnimationFinished) {
-                                centerToRestaurants(restaurants, boundsBuilder)
-                            }
+                    if (restaurants.isNotEmpty()) {
+                        restaurants.forEach { restaurant ->
+                            val marker = map.addMarker(
+                                MarkerOptions().position(
+                                    LatLng(
+                                        restaurant.latlng.lat,
+                                        restaurant.latlng.lng
+                                    )
+                                ).title(restaurant.name)
+                            )
+                            markerMap[marker] = restaurant
                         }
 
+                        if (!initialAnimationFinished) {
+                            centerToRestaurants(restaurants, boundsBuilder)
+                        }
                     }
                 }
                 is Lce.Error -> {
+                    Toast.makeText(activity, "Error when fetching restaurants", Toast.LENGTH_SHORT).show()
                     Timber.e(lce.message)
                 }
             }
