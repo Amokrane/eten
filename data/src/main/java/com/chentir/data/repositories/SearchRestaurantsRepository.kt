@@ -19,6 +19,6 @@ class SearchRestaurantsRepository(
             emit(restaurantsCache.get())
             val restaurants = searchRestaurantsSource.searchRestaurants(lat, lng)
             emit(restaurants)
-            restaurantsCache.set(restaurants)
+            restaurantsCache.set(listOf())
         }
 }

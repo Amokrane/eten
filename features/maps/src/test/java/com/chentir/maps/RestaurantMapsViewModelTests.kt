@@ -77,7 +77,7 @@ class RestaurantMapsViewModelTests {
     }
 
     @Test
-    fun getNearestRestaurants() {
+    fun getNearestRestaurants_givenRestaurantsWithinAndOutsideBounds_OnlyRestaurantsWithinBoundsShouldBePosted() {
         runBlocking {
             launch (Dispatchers.Main) {
                 val currentLat = 48.859985

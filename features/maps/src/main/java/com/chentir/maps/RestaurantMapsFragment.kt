@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -59,7 +60,7 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
 
     companion object {
         fun newInstance() = RestaurantMapsFragment()
-        const val DEFAULT_ZOOM_LEVEL = 13f
+        const val DEFAULT_ZOOM_LEVEL = 10f
         const val DEBOUNCE_DELAY_IN_MS = 100L
     }
 
@@ -109,31 +110,9 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
     @SuppressLint("MissingPermission")
     private fun showNearestRestaurants(map: GoogleMap) {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            val currentLat = location.latitude
-            val currentLng = location.longitude
-            map.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    LatLng(currentLat, currentLng),
-                    DEFAULT_ZOOM_LEVEL
-                ), object : GoogleMap.CancelableCallback {
-                    override fun onFinish() {
-                        initialAnimationFinished = true
-                        updateNearestRestaurants(
-                            currentLat,
-                            currentLng,
-                            map.projection.visibleRegion.latLngBounds
-                        )
-                    }
-
-                    override fun onCancel() {
-                        // nothing to be done
-                    }
-                }
-            )
-
             updateNearestRestaurants(
-                currentLat,
-                currentLng,
+                location.latitude,
+                location.longitude,
                 map.projection.visibleRegion.latLngBounds
             )
         }
@@ -159,6 +138,7 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
     }
 
     private fun updateNearestRestaurants(lat: Double, lng: Double, visibleBounds: LatLngBounds) {
+
         viewModel.getNearestRestaurants(lat, lng, visibleBounds)
         viewModel.liveData.observe(viewLifecycleOwner, Observer<Lce<List<Restaurant>>> { lce ->
             when (lce) {
@@ -167,17 +147,28 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
                 }
                 is Lce.Success<List<Restaurant>> -> {
                     val restaurants = lce.data
+                    val boundsBuilder = LatLngBounds.builder()
                     Timber.d("Nearest Restaurants ${restaurants.size}")
-                    restaurants.forEach { restaurant ->
-                        val marker = map.addMarker(
-                            MarkerOptions().position(
-                                LatLng(
-                                    restaurant.latlng.lat,
-                                    restaurant.latlng.lng
+                    when (restaurants.isEmpty()) {
+                        true -> Timber.d("No restaurants near you!")
+                        false -> {
+                            restaurants.forEach { restaurant ->
+                                val marker = map.addMarker(
+                                    MarkerOptions().position(
+                                        LatLng(
+                                            restaurant.latlng.lat,
+                                            restaurant.latlng.lng
+                                        )
+                                    ).title(restaurant.name)
                                 )
-                            ).title(restaurant.name)
-                        )
-                        markerMap[marker] = restaurant
+                                markerMap[marker] = restaurant
+                            }
+
+                            if (!initialAnimationFinished) {
+                                centerToRestaurants(restaurants, boundsBuilder)
+                            }
+                        }
+
                     }
                 }
                 is Lce.Error -> {
@@ -185,6 +176,30 @@ class RestaurantMapsFragment : Fragment(), OnMapReadyCallback, OnCameraMoveListe
                 }
             }
         })
+    }
+
+    /**
+     * Center the Map to include all the restaurants in the viewport
+     */
+    private fun centerToRestaurants(
+        restaurants: List<Restaurant>,
+        boundsBuilder: LatLngBounds.Builder
+    ) {
+        restaurants.forEach { restaurant ->
+            boundsBuilder.include(LatLng(restaurant.latlng.lat, restaurant.latlng.lng))
+        }
+
+        val center = boundsBuilder.build().center
+        map.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(center, DEFAULT_ZOOM_LEVEL),
+            object : GoogleMap.CancelableCallback {
+                override fun onFinish() {
+                    initialAnimationFinished = true
+                }
+
+                override fun onCancel() {
+                }
+            })
     }
 
     override fun onMarkerClick(marker: Marker?): Boolean {

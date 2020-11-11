@@ -27,9 +27,10 @@ class RestaurantMapsViewModel(private val nearestRestaurantsUseCase: NearestRest
                 currentLatitude,
                 currentLongitude
             ).collect { restaurants ->
-                val restaurantsWithinBounds = restaurants.filter {
-                    restaurant ->  viewportBounds.contains(LatLng(restaurant.latlng.lat, restaurant.latlng.lng))
+                val restaurantsWithinBounds = restaurants.filter { restaurant ->
+                    viewportBounds.contains(LatLng(restaurant.latlng.lat, restaurant.latlng.lng))
                 }
+
                 liveData.postValue(Lce.Success(restaurantsWithinBounds))
             }
         } catch (e: Exception) {
