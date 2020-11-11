@@ -9,3 +9,4 @@ This application lets you find restaurants that are close to your current locati
 - Improve the restaurant detail page by showing more information & pictures.
 - Add a local storage data source to access data offline.
 - Implement a more user friendly UI that follows material design guidelines.
+- Offer the ability to set a custom search radius to the user.
