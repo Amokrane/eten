@@ -69,7 +69,7 @@ class NearestRestaurantsUseCaseTest {
                     LatLng(currentLat, currentLng),
                     secondRestaurantLatLng
                 )
-            ).thenReturn(6000.0f)
+            ).thenReturn(NearestRestaurantsUseCase.DEFAULT_RADIUS_IN_METERS + 1.0f)
 
             val flow = nearestRestaurantsUseCase.getNearestRestaurants(currentLat, currentLng)
             flow.test {
