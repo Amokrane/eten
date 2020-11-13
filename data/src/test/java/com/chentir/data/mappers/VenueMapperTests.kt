@@ -30,7 +30,7 @@ class VenueMapperTests {
             id = "fake_id",
             name = "fake_name",
             address = "fake_address",
-            formattedAddress = arrayOf("fake, formatted, address"),
+            formattedAddress = listOf("fake, formatted, address"),
             latLng = LatLng(48.0, 2.0),
             phoneNumber = "fake_formatted_phone_number"
         ))
@@ -39,7 +39,7 @@ class VenueMapperTests {
     private fun givenVenue() = Venue(
         id = "fake_id",
         name = "fake_name",
-        location = Location("fake_address", arrayOf("fake, formatted, address"), 48.0, 2.0),
+        location = Location("fake_address", listOf("fake, formatted, address"), 48.0, 2.0),
         canonicalUrl = "canonical_url",
         contact = Contact("fake_phone_number", "fake_formatted_phone_number")
     )
